@@ -1,0 +1,11 @@
+omegaconf==1.4.1
+tqdm==4.45.0
+pytorch_lightning==0.7.5
+numpy==1.17.5
+comet_ml==3.1.6
+pandas==1.0.3
+matplotlib==3.2.1
+torch==1.5.0
+hydra_core==0.11.3
+hydra==2.5
+scikit_learn==0.22.2.post1
