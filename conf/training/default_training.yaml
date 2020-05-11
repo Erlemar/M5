@@ -1,0 +1,4 @@
+training:
+  lr: 0.001
+  metric: main_score
+  seed: 666

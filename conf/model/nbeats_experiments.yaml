@@ -1,0 +1,52 @@
+model:
+  class_name: src.models.n_beats.n_beats.NBeats
+  hidden_layer_dim: 512
+  blocks:
+#    block1:
+#      stack: src.models.n_beats.blocks.trend_block.TrendBlock
+#      num_blocks_per_stack: 4
+#      thetas_dims:
+#        - 1
+#        - 1
+#
+#    block2:
+#      stack: src.models.n_beats.blocks.seasonality_block.SeasonalityBlock
+#      num_blocks_per_stack: 4
+#      thetas_dims:
+#        - 1
+#        - 1
+
+    block3:
+      stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+      num_blocks_per_stack: 16
+      thetas_dims:
+        - 4
+        - 4
+
+    block4:
+      stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+      num_blocks_per_stack: 16
+      thetas_dims:
+        - 2
+        - 8
+
+    block5:
+      stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+      num_blocks_per_stack: 16
+      thetas_dims:
+        - 2
+        - 8
+
+#    block6:
+#      stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 1
+#      thetas_dims:
+#        - 2
+#        - 8
+#
+#    block7:
+#      stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 1
+#      thetas_dims:
+#        - 2
+#        - 8

@@ -1,0 +1,17 @@
+defaults:
+  - dataset: m5nbeats
+  - trainer: default_trainer
+  - training: default_training
+  - logging: tensorboard
+  - optimizer: adamw
+  - scheduler: plateau
+  - model: nbeats_main
+  - callbacks: callbacks
+  - private: custom
+  - data: data
+  - loss: wrmsse
+
+general:
+  save_dir: logs/
+  workspace: erlemar
+  project_name: m5

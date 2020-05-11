@@ -1,0 +1,10 @@
+experiments:
+  dataset:
+    backcast_length:
+      - 280
+      - 56
+    train_history_modifier:
+      - 10
+  model:
+    hidden_layer_dim:
+      - 128

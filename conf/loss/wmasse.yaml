@@ -1,0 +1,5 @@
+loss:
+  class_name: src.utils.custom_loss_functions.WMASSE
+  params:
+    use_scale: True
+    use_weights: True

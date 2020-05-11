@@ -1,0 +1,5 @@
+dataset:
+  class_name: src.utils.dataset.M5NBeatsDataset
+  forecast_length: 28
+  backcast_length: 56
+  train_history_modifier: 2.0

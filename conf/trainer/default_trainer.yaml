@@ -1,0 +1,8 @@
+trainer:
+  gpus: 2
+  distributed_backend: dp
+  accumulate_grad_batches: 1
+  profiler: False
+  max_epochs: 200
+  fast_dev_run: False
+  weights_summary: top
