@@ -103,13 +103,13 @@ class NBeats(nn.Module):
 
     def forward(self, input_var, y, scale, weight):
         forecast_length = self._f_b_dim[0]
-        forecasted_values = torch.zeros((forecast_length))
+        forecasted_values = torch.zeros(forecast_length)
         forecasted_values = forecasted_values.type_as(input_var)
         residuals = input_var
         for idx, stack in enumerate(self._stacks):
             local_stack_forecast, local_stack_backcast = stack(residuals)
-            forecasted_values = forecasted_values + (local_stack_forecast)
-            residuals = residuals - (local_stack_backcast)
+            forecasted_values = forecasted_values + local_stack_forecast
+            residuals = residuals - local_stack_backcast
 
         loss = self.criterion(forecasted_values, y, scale, weight)
 
