@@ -27,11 +27,13 @@ def get_m5model(cfg: DictConfig):
         num_blocks_per_stack.append(block['num_blocks_per_stack'])
         thetas_dims.append(block['thetas_dims'])
 
+    criterion = load_obj(cfg.loss.class_name)(**cfg.loss.params)
     net = load_obj(cfg.model.class_name)
     net = net(stacks=stacks,
               f_b_dim=f_b_dim,
               num_blocks_per_stack=num_blocks_per_stack,
               thetas_dims=thetas_dims,
-              hidden_layer_dim=cfg.model.hidden_layer_dim)
+              hidden_layer_dim=cfg.model.hidden_layer_dim,
+              criterion=criterion)
 
     return net

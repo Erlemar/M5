@@ -113,11 +113,11 @@ class Stack(nn.Module):
                 the input_val.
         """
         forecast_length, backcast_length = self._f_b_dim[0], self._f_b_dim[1]
-        forecasted_values = torch.zeros((forecast_length))
+        forecasted_values = torch.zeros(forecast_length)
         forecasted_values = forecasted_values.type_as(input_val)
         residual_values = input_val
         for block in self._blocks:
             local_block_forecast, local_block_backcast = block(residual_values)
             forecasted_values = forecasted_values + local_block_forecast
-            residual_values = residual_values - (local_block_backcast)
+            residual_values = residual_values - local_block_backcast
         return forecasted_values, residual_values

@@ -3,6 +3,7 @@ import torch.nn as nn
 from src.utils.custom_loss_functions import WRMSSE
 from src.models.n_beats.stack import Stack
 
+
 class NBeats(nn.Module):
     """ N-Beats Network.
     N-Beats Network as described by:
@@ -64,8 +65,9 @@ class NBeats(nn.Module):
                  num_hidden_layers=2,
                  layer_nonlinearity=nn.ReLU,
                  layer_w_init=nn.init.xavier_uniform_,
-                 layer_b_init=nn.init.zeros_):
-        
+                 layer_b_init=nn.init.zeros_,
+                 criterion=None):
+
         if not (len(thetas_dims) == len(stacks) == len(num_blocks_per_stack)):
             raise Exception("thetas dims, stacks, and num_blocks_per_stack must \
                             all be lists/tuples of equal length. \
@@ -86,7 +88,7 @@ class NBeats(nn.Module):
         self._layer_b_init = layer_b_init
         super().__init__()
         self._stacks = nn.ModuleList()
-        self.criterion = WRMSSE()
+        self.criterion = criterion
         for idx, block_cls in enumerate(self._stack_classes):
             new_stack = Stack(f_b_dim=self._f_b_dim,
                               block_cls=block_cls,
