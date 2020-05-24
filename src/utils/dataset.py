@@ -119,7 +119,7 @@ class M5NBeatsDataset(Dataset):
         scale = self.ws_dict['scale'][item_name]
         weight = self.ws_dict['weights'][item_name]
 
-        return x, y, np.array(scale), np.array(weight)
+        return x, y, np.array(scale).reshape(1,), np.array(weight).reshape(1,)
 
     def __len__(self):
         return len(self.df)

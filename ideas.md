@@ -1,46 +1,47 @@
-Идеи:
+Done:
 - Normalization: mean+std; divide by max; log1p
 very slow convergence rate and worse score
-2. 
-3. predict 1, 7 or 14 values and then predict again
-4. More stacks.
-5. Several block types in stacks !!!
-6. Try to increase train_history_modifier
-7. We observed that the interpretable model works best when weights are shared across stack, while generic model works best when none of the weights are shared.
-8. Change the block itself
-9. share_thetas?
-nb_harmonics?
-бленд
-ещё один репозиторий!!!
-семплировать много раз из одного ряда за эпоху
+
+- Several block types in stacks !!!
+not possible
+
+- We observed that the interpretable model works best when weights are shared across stack, while generic model works best when none of the weights are shared.
+- Try to increase train_history_modifier
+- More stacks.
+- share_thetas
+- try to disable scale or weight in loss
+- look at predictions
+- rewrite the code so that it is possible to define all parameters separately for each block
+
+---
+
+Идеи:
+
+- predict 1, 7 or 14 values and then predict again
+- Change the block itself
+- семплировать много раз из одного ряда за эпоху
 мысль: при создании датасета разбить файл сразу на куски, которые можно брать\
 different thetas
-cross-validation by items?
-The winning M4 solution smooths the series and removes seasonality prior to fitting the data through a NN. After getting predictions from the model, the seasonality is added back. These decisions were made by the modeler due to his experiences with forecasting and NN models, and may also apply here. 
+ 
 - модель на 28 дней
 - модель рекурсивная
 - предсказывает следующую продажу, через одну и так далее
-
-попробовать выключить scale или weight из лосса
-dense connections
-метрики:
+- dense connections
+- метрики:
 smape
 mase
 mape
 owa
 
-1 trend, 1 seasonality, several general
-разное количество hidden_layer_dim
-2048 - s, 256 - t, 512 - g
-
-!!! look at predictions
-на вход подавать несколько backcast. Ну или просто несколько раз прогонять модель по ним
-на выход несколько периодов (1б 7б 14б 28).
-Как auxilary или реально использовать.
-разные лоссы
-
-разное количество и ширина слоев для каждого блока!!!!!!
-several trend + seasonality. after each other. Or general between
+- на вход подавать несколько backcast. Ну или просто несколько раз прогонять модель по ним
+- на выход несколько периодов (1б 7б 14б 28).
+- Как auxilary или реально использовать.
+- разные лоссы
+- several trend + seasonality. after each other. Or general between
+- предсказывать 1 день вперед, 2 дня вперед и так далее
+- zero and non-zero! auxilary
+- add categories?
+- separate models for separate categories?
 ---
 S-width 2048
 S-blocks 3
@@ -62,13 +63,6 @@ Batch 1024
 add batch norm?
 --
 
-как тренировать stages?
-
-
-python hydra_run.py dataset.backcast_length=280 dataset.train_history_modifier=7 
-
-
-python hydra_run.py training.epochs=5 model.hidden_layer_dim=256 model.blocks.block1.num_blocks_per_stack=5
 d:\Programs\anaconda3\envs\dl\Lib\site-packages\hydra\conf\hydra\
 
 ---
@@ -106,17 +100,5 @@ report results on the test set (please refer to Appendix B for the ablation of e
 the median as ensemble aggregation function.
 
 
-We use the train and validation subsets to
-tune hyperparameters. Once the hyperparameters are determined, we train the model on the full train
-set and report results on the test set.
 
-
-
-For each selected TS id we
-pick a random forecast point from the historical range of length LH immediately preceding the last
-point in the train part of the TS. LH is a cross-validated hyperparameter. We observed that for subsets
-with large number of time series it tends to be smaller and for subsets with smaller number of time
-series it tends to be larger. For example, in massive Yearly, Monthly, Quarterly subsets of M4 LH is
-equal to 1.5; and in moderate to small Weekly, Daily, Hourly subsets of M4 LH is equal to 10
-
-
+The winning M4 solution smooths the series and removes seasonality prior to fitting the data through a NN. After getting predictions from the model, the seasonality is added back. These decisions were made by the modeler due to his experiences with forecasting and NN models, and may also apply here.

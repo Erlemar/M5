@@ -74,6 +74,7 @@ class Metrics:
                 result.append(ii)
         return np.ma.median(result)
 
+
 class WRMSSEEvaluator(object):
     group_ids = ('all_id', 'state_id', 'store_id', 'cat_id', 'dept_id', 'item_id',
                  ['state_id', 'cat_id'], ['state_id', 'dept_id'], ['store_id', 'cat_id'],

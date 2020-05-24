@@ -19,8 +19,8 @@ def show_scores(cfg: DictConfig = None,
             experiment_results.append((experiment.name, best_score))
 
     scores = pd.DataFrame(experiment_results, columns=['id', 'score'])
-    scores = scores.sort_values('score')
-    print(scores.head(10))
+    scores = scores.sort_values('id')
+    print(scores.sort_values('score').head(10))
     scores.to_csv('saved_objects/scores.csv', index=False)
 
 

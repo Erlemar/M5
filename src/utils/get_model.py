@@ -19,21 +19,18 @@ def get_m5model(cfg: DictConfig):
 
     f_b_dim = (forecast_length, backcast_length)
 
-    stacks = []
-    num_blocks_per_stack = []
-    thetas_dims = []
+    # collect stack parameters.
+    model_dict = {k: [] for k in cfg.model.blocks[0].keys()}
     for block in cfg.model.blocks:
-        stacks.append(load_obj(block['stack']))
-        num_blocks_per_stack.append(block['num_blocks_per_stack'])
-        thetas_dims.append(block['thetas_dims'])
+        for k, v in block.items():
+            if type(v) == str:
+                v = load_obj(v)
+            model_dict[k].append(v)
 
     criterion = load_obj(cfg.loss.class_name)(**cfg.loss.params)
     net = load_obj(cfg.model.class_name)
-    net = net(stacks=stacks,
-              f_b_dim=f_b_dim,
-              num_blocks_per_stack=num_blocks_per_stack,
-              thetas_dims=thetas_dims,
-              hidden_layer_dim=cfg.model.hidden_layer_dim,
-              criterion=criterion)
+    net = net(f_b_dim=f_b_dim,
+              criterion=criterion,
+              **model_dict)
 
     return net

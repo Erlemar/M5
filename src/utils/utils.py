@@ -10,6 +10,7 @@ from omegaconf import DictConfig, OmegaConf
 import shutil
 import hydra
 import collections
+from torch import nn
 
 
 def load_obj(obj_path: str, default_obj_path: str = "") -> Any:
