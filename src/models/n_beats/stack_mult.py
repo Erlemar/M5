@@ -3,7 +3,8 @@ import torch.nn as nn
 
 
 class Stack(nn.Module):
-    """ Stack in N-Beats Network.
+    """
+    Stack in N-Beats Network.
     Stacks are residual networks, made up of multiple blocks
     and their architecture can be easily understood in Figure 1
     of the N-Beats paper.
@@ -90,7 +91,7 @@ class Stack(nn.Module):
             layer_b_init=self._layer_b_init,
         )
         self._blocks.append(block_module)
-        for i in range(1, num_blocks_to_create):
+        for _ in range(1, num_blocks_to_create):
             if not self._share_stack_weights:
                 block_module = self._block_cls(
                     f_b_dim=self._f_b_dim,
@@ -105,7 +106,7 @@ class Stack(nn.Module):
             self._blocks.append(block_module)
 
     def forward(self, input_val):
-        """feed forward method for stack modules.
+        """Feed forward method for stack modules.
 
         args:
             - input_val(torch.tensor): input value to stack
@@ -116,7 +117,7 @@ class Stack(nn.Module):
             - forecasted values. These are the forecasts based on
                 the input_val.
         """
-        forecast_length, backcast_length = self._f_b_dim[0], self._f_b_dim[1]
+        forecast_length, _ = self._f_b_dim[0], self._f_b_dim[1]
         forecasted_values = torch.zeros(forecast_length)
         forecasted_values = forecasted_values.type_as(input_val)
         forecasted_values1 = torch.zeros(forecast_length // 2)

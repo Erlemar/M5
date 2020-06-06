@@ -42,11 +42,11 @@ class GenericNBeatsBlock(NBeatsBlock):
             if len(thetas_dim) == 2:
                 if not (thetas_dim[0] == thetas_dim[1]):
                     raise Exception(
-                        "When sharing g theta in generic block. thetas_dim[0] and thetas_dim[1] must be equal"
+                        'When sharing g theta in generic block. thetas_dim[0] and thetas_dim[1] must be equal'
                     )
             if not f_b_dim[0] == f_b_dim[1]:
                 raise Exception(
-                    "When sharing g theta in generic block, the length of the forecast and backcast must be the same"
+                    'When sharing g theta in generic block, the length of the forecast and backcast must be the same'
                 )
         super(GenericNBeatsBlock, self).__init__(
             f_b_dim=f_b_dim,
@@ -64,7 +64,7 @@ class GenericNBeatsBlock(NBeatsBlock):
             linear_layer = nn.Linear(thetas_dim[i], f_b_dim[i])
             layer_w_init(linear_layer.weight)
             layer_b_init(linear_layer.bias)
-            out_layer.add_module("g_theta_" + str(i), linear_layer)
+            out_layer.add_module('g_theta_' + str(i), linear_layer)
             if layer_nonlinearity:
                 out_layer.add_module('non_linearity', layer_nonlinearity())
             self._g_theta_out_layer.append(out_layer)

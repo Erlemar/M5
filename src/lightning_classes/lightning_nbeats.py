@@ -46,7 +46,7 @@ class LitM5NBeats(pl.LightningModule):
 
         logger_logs = {'training_loss': loss}
 
-        logs = {'loss': loss}
+        # logs = {'loss': loss}
         return {'loss': loss, 'progress_bar': logger_logs, 'log': logger_logs}
 
     def validation_step(self, batch, batch_idx):
@@ -59,12 +59,12 @@ class LitM5NBeats(pl.LightningModule):
     def validation_epoch_end(self, outputs):
         y_pred = []
         losses = []
-        for step, x in enumerate(outputs):
+        for _, x in enumerate(outputs):
             y_pred.extend(x['y_pred'].cpu().detach().numpy())
             losses.extend(x['val_loss'].cpu().detach().numpy())
         main_score = self.evaluator.score(np.array(y_pred))
         main_score = torch.tensor(main_score).type_as(x['y_pred'])
-        tensorboard_logs = {'main_score': main_score, 'val_loss': np.sum(losses), "epoch": self.trainer.current_epoch}
+        tensorboard_logs = {'main_score': main_score, 'val_loss': np.sum(losses), 'epoch': self.trainer.current_epoch}
         return {  # 'val_loss': np.sum(losses), 'main_score': main_score,
             'log': tensorboard_logs,
             'progress_bar': tensorboard_logs,
@@ -74,7 +74,7 @@ class LitM5NBeats(pl.LightningModule):
         optimizer = load_obj(self.cfg.optimizer.class_name)(self.net.parameters(), **self.cfg.optimizer.params)
         scheduler = load_obj(self.cfg.scheduler.class_name)(optimizer, **self.cfg.scheduler.params)
 
-        return [optimizer], [{"scheduler": scheduler, "interval": self.cfg.scheduler.step}]
+        return [optimizer], [{'scheduler': scheduler, 'interval': self.cfg.scheduler.step}]
 
     def prepare_data(self):
         datasets = get_datasets(self.cfg)

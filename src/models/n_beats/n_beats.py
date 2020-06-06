@@ -1,3 +1,5 @@
+from typing import Any
+
 import torch
 import torch.nn as nn
 from src.utils.custom_loss_functions import WRMSSE
@@ -65,19 +67,17 @@ class NBeats(nn.Module):
         hidden_layer_dim: list,
         num_hidden_layers: list,
         layer_nonlinearity: list,
-        layer_w_init=nn.init.xavier_uniform_,
-        layer_b_init=nn.init.zeros_,
-        criterion=None,
+        layer_w_init: Any = nn.init.xavier_uniform_,
+        layer_b_init: Any = nn.init.zeros_,
+        criterion: object = None,
     ):
 
         if not (len(thetas_dims) == len(stack) == len(num_blocks_per_stack)):
             raise Exception(
-                "thetas dims, stacks, and num_blocks_per_stack must \
+                f'thetas dims, stacks, and num_blocks_per_stack must \
                             all be lists/tuples of equal length. \
-                            thetas_dim = {}, stacks = {}, \
-                            num_blocks_per_stack = {}".format(
-                    len(thetas_dims), len(stack), len(num_blocks_per_stack)
-                )
+                            thetas_dim = {len(thetas_dims)}, stacks = {len(stack)}, \
+                            num_blocks_per_stack = {len(num_blocks_per_stack)}'
             )
         self._stack_classes = stack
         self._f_b_dim = f_b_dim
@@ -114,7 +114,7 @@ class NBeats(nn.Module):
         forecasted_values = torch.zeros(forecast_length)
         forecasted_values = forecasted_values.type_as(input_var)
         residuals = input_var
-        for idx, stack in enumerate(self._stacks):
+        for _, stack in enumerate(self._stacks):
             local_stack_forecast, local_stack_backcast = stack(residuals)
             forecasted_values = forecasted_values + local_stack_forecast
             residuals = residuals - local_stack_backcast

@@ -1,5 +1,6 @@
 import argparse
 import glob
+from typing import List
 
 import hydra.experimental
 import numpy as np
@@ -14,7 +15,7 @@ from src.utils.utils import set_seed
 from src.utils.get_dataset import get_datasets
 
 
-def make_prediction(cfg: DictConfig):
+def make_prediction(cfg: DictConfig) -> None:
     """
     Run pytorch-lightning model inference
 
@@ -22,7 +23,7 @@ def make_prediction(cfg: DictConfig):
         cfg: hydra config
 
     Returns:
-
+        None
     """
     set_seed(cfg.training.seed)
     model_name = glob.glob(f'outputs/{cfg.inference.run_name}/saved_models/*')[0]
@@ -37,13 +38,13 @@ def make_prediction(cfg: DictConfig):
         datasets[cfg.inference.mode], batch_size=cfg.data.batch_size, num_workers=cfg.data.num_workers, shuffle=False
     )
 
-    y_pred = []
+    y_pred: List[np.array] = []
     device = cfg.data.device
 
     net.to(device)
     net.eval()
 
-    for i, (x, y, scales, weights) in enumerate(loader):
+    for _, (x, y, scales, weights) in enumerate(loader):
         forecast, loss = net(x.float().to(device), y.float().to(device), scales.to(device), weights.to(device))
         y_pred.extend(forecast.cpu().detach().numpy())
 
@@ -55,21 +56,16 @@ def make_prediction(cfg: DictConfig):
     sub.to_csv(f'subs/{cfg.inference.run_name}_{cfg.inference.mode}.csv', index=False)
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Inference in M5 competition")
-    parser.add_argument("--run_name", help="folder_name", type=str, default='2020_05_16_15_43_39')
-    parser.add_argument("--mode", help="valid or test", type=str, default='valid')
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Inference in M5 competition')
+    parser.add_argument('--run_name', help='folder_name', type=str, default='2020_05_16_15_43_39')
+    parser.add_argument('--mode', help='valid or test', type=str, default='valid')
     args = parser.parse_args()
 
-    hydra.experimental.initialize(config_dir="conf", strict=True)
-    inference_cfg = hydra.experimental.compose(config_file="config.yaml")
+    hydra.experimental.initialize(config_dir='conf', strict=True)
+    inference_cfg = hydra.experimental.compose(config_file='config.yaml')
     inference_cfg['inference']['run_name'] = args.run_name
     inference_cfg['inference']['mode'] = args.mode
-    # print(inference_cfg.pretty())
-    # print(inference_cfg.data)
-    # print(inference_cfg.inference)
-    # print(inference_cfg.inference.run_name)
-    # print(inference_cfg.inference.run_name)
 
     path = f'outputs/{inference_cfg.inference.run_name}/.hydra/config.yaml'
 

@@ -4,7 +4,7 @@ from omegaconf import DictConfig
 from src.utils.utils import load_obj
 
 
-def get_datasets(cfg: DictConfig):
+def get_datasets(cfg: DictConfig) -> dict:
     """
     Get datases for modelling
 
@@ -12,7 +12,7 @@ def get_datasets(cfg: DictConfig):
         cfg: config
 
     Returns:
-
+        dict with datasets
     """
     train_df = pd.read_csv(f'{cfg.data.folder_path}/data/sales_train_validation.csv')
 
@@ -20,7 +20,7 @@ def get_datasets(cfg: DictConfig):
     valid_fold_df = train_df.iloc[:, -28:].copy()
 
     backcast_length = cfg.dataset.backcast_length
-    forecast_length = cfg.dataset.forecast_length
+    # forecast_length = cfg.dataset.forecast_length
 
     # train dataset
     dataset_class = load_obj(cfg.dataset.class_name)

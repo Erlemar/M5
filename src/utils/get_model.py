@@ -1,10 +1,12 @@
+from typing import Dict
+
 import pandas as pd
 from omegaconf import DictConfig
 import torch
 from src.utils.utils import load_obj
 
 
-def get_m5model(cfg: DictConfig):
+def get_m5model(cfg: DictConfig) -> object:
     """
     Get model
 
@@ -12,7 +14,7 @@ def get_m5model(cfg: DictConfig):
         cfg: config
 
     Returns:
-
+        initialized model
     """
     backcast_length = cfg.dataset.backcast_length
     forecast_length = cfg.dataset.forecast_length
@@ -20,7 +22,7 @@ def get_m5model(cfg: DictConfig):
     f_b_dim = (forecast_length, backcast_length)
 
     # collect stack parameters.
-    model_dict = {k: [] for k in cfg.model.blocks[0].keys()}
+    model_dict: Dict[str, list] = {k: [] for k in cfg.model.blocks[0].keys()}
     for block in cfg.model.blocks:
         for k, v in block.items():
             if type(v) == str:

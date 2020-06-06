@@ -9,7 +9,7 @@ class CustomLossFunctions:
 
     @staticmethod
     def sMAPE(forecasted_out, target):
-        """ sMAPE loss function
+        """ Make sMAPE loss function
 
         Args:
             forecasted_out(torch.tensor): 2 dim tensor (2D array where the
@@ -19,8 +19,8 @@ class CustomLossFunctions:
             target(torch.tensor): 2 dim tensor with corresponing actuals/targets
                 to the afformentioned forecasts
 
-        Raises assertion error if forecasted_out and target dimensions/ranks/shapes aren't = 2
-        Raises assertion error if the forecasted_out and target's shape are not the same
+        Raise assertion error if forecasted_out and target dimensions/ranks/shapes aren't = 2
+        Raise assertion error if the forecasted_out and target's shape are not the same
         """
         forecasted_dim = forecasted_out.shape
         target_shape = target.shape
@@ -28,7 +28,7 @@ class CustomLossFunctions:
         assert forecasted_dim == target_shape
         smape = 0
         num_eval_samples = 0
-        for idx, (targ, forc) in enumerate(zip(target, forecasted_out)):
+        for _, (targ, forc) in enumerate(zip(target, forecasted_out)):
             num_eval_samples += 1
             smape += torch.FloatTensor.abs(forc - targ) / (
                 (torch.FloatTensor.abs(targ) + torch.FloatTensor.abs(forc)) / 2

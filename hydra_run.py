@@ -10,14 +10,12 @@ from src.utils.utils import set_seed, save_useful_info
 from src.utils.utils import load_obj, flatten_omegaconf
 
 
-def run(cfg: DictConfig):
+def run(cfg: DictConfig) -> None:
     """
     Run pytorch-lightning model
 
     Args:
         cfg: hydra config
-
-    Returns:
 
     """
     set_seed(cfg.training.seed)
@@ -57,12 +55,12 @@ def run(cfg: DictConfig):
     trainer.fit(model)
 
 
-@hydra.main(config_path="conf/config.yaml")
+@hydra.main(config_path='conf/config.yaml')
 def run_model(cfg: DictConfig) -> None:
     print(cfg.pretty())
     save_useful_info()
     run(cfg)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     run_model()
