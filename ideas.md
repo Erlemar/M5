@@ -18,7 +18,6 @@ not possible
 Идеи:
 
 - predict 1, 7 or 14 values and then predict again
-- Change the block itself
 - семплировать много раз из одного ряда за эпоху
 мысль: при создании датасета разбить файл сразу на куски, которые можно брать\
 different thetas
@@ -43,24 +42,6 @@ owa
 - add categories?
 - separate models for separate categories?
 ---
-S-width 2048
-S-blocks 3
-S-block-layers 4
-T-width 256
-T-degree 2
-T-blocks 3
-T-block-layers 4
-Sharing STACK LEVEL
-
-Width 512
-Blocks 1
-Block-layers 4
-Stacks 30
-Sharing NO
-Lookback period 2H,3H,4H,5H,6H,7H
-Batch 1024
-
-add batch norm?
 --
 
 d:\Programs\anaconda3\envs\dl\Lib\site-packages\hydra\conf\hydra\
@@ -85,20 +66,3 @@ class TimeDistributed(torch.nn.Module):
           output_t  = y.unsqueeze(1)
           output = torch.cat((output, output_t ), 1)
         return output
-
-Ensembling is used by all the top entries in the M4-competition. We rely on ensembling as well
-to be comparable. We found that ensembling is a much more powerful regularization technique
-than the popular alternatives, e.g. dropout or L2-norm penalty. The addition of those methods
-improved individual models, but was hurting the performance of the ensemble. The core property of
-an ensemble is diversity. We build an ensemble using several sources of diversity. First, the ensemble
-models are fit on three different metrics: sMAPE, MASE and MAPE, a version of sMAPE that has only
-the ground truth value in the denominator. Second, for every horizon H, individual models are trained
-on input windows of different length: 2H,3H,...,7H, for a total of six window lengths. Thus the
-overall ensemble exhibits a multi-scale aspect. Finally, we perform a bagging procedure (Breiman,
-1996) by including models trained with different random initializations. We use 180 total models to
-report results on the test set (please refer to Appendix B for the ablation of ensemble size). We use
-the median as ensemble aggregation function.
-
-
-
-The winning M4 solution smooths the series and removes seasonality prior to fitting the data through a NN. After getting predictions from the model, the seasonality is added back. These decisions were made by the modeler due to his experiences with forecasting and NN models, and may also apply here.

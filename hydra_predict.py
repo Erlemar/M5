@@ -34,8 +34,6 @@ def make_prediction(cfg: DictConfig):
 
     net = lit_model.net
 
-
-
     datasets = get_datasets(cfg)
 
     loader = torch.utils.data.DataLoader(datasets[cfg.inference.mode],
