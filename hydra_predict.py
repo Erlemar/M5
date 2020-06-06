@@ -72,6 +72,7 @@ if __name__ == '__main__':
     with open(path) as cfg:
         cfg_yaml = yaml.safe_load(cfg)
 
+    cfg_yaml['inference'] = inference_cfg['inference']
     cfg = OmegaConf.create(cfg_yaml)
-    cfg['inference'] = inference_cfg.inference
+    # cfg.inference = inference_cfg['inference']
     make_prediction(cfg)

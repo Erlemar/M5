@@ -6,7 +6,7 @@ from hydra.experimental import initialize, compose
 from omegaconf import DictConfig
 
 
-def show_scores(cfg: DictConfig = None, metric: str = 'main_score') -> None:
+def show_scores(cfg: DictConfig, metric: str = 'main_score') -> None:
     comet_api = comet_ml.api.API(cfg.private.comet_api)
 
     experiments = comet_api.get(f'{cfg.general.workspace}/{cfg.general.project_name}')

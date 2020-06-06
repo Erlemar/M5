@@ -8,7 +8,7 @@ import pickle
 
 
 class M5NBeatsDataset(Dataset):
-    def __init__(self, df: pd.DataFrame = None, mode: str = 'train', cfg: DictConfig = None):
+    def __init__(self, df: pd.DataFrame, cfg: DictConfig, mode: str = 'train'):
         """
         Prepare data for nbeats model.
 

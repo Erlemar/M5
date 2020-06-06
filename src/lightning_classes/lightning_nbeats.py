@@ -1,6 +1,7 @@
 import json
 import pickle
 from functools import lru_cache
+from typing import Dict, Any, Optional
 
 import numpy as np
 import torch
@@ -14,10 +15,10 @@ from src.utils.utils import load_obj
 
 
 class LitM5NBeats(pl.LightningModule):
-    def __init__(self, hparams: dict = None, cfg: DictConfig = None):
+    def __init__(self, hparams: Dict[str, float], cfg: DictConfig):
         super(LitM5NBeats, self).__init__()
         self.cfg = cfg
-        self.hparams = hparams
+        self.hparams: Dict[str, float] = hparams
         self.net = get_m5model(self.cfg)
         self.hparams['n_params'] = sum(p.numel() for p in self.net.parameters())
         self.criterion = load_obj(self.cfg.loss.class_name)(**self.cfg.loss.params)
