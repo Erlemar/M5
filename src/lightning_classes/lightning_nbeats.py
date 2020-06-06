@@ -14,7 +14,6 @@ from src.utils.utils import load_obj
 
 
 class LitM5NBeats(pl.LightningModule):
-
     def __init__(self, hparams: dict = None, cfg: DictConfig = None):
         super(LitM5NBeats, self).__init__()
         self.cfg = cfg
@@ -43,10 +42,7 @@ class LitM5NBeats(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x_train_batch, y_train_batch, scales, weights = batch
 
-        forecast, loss = self.net(x_train_batch.float(),
-                                  y_train_batch.float(),
-                                  scales,
-                                  weights)
+        forecast, loss = self.net(x_train_batch.float(), y_train_batch.float(), scales, weights)
 
         logger_logs = {'training_loss': loss}
 
@@ -56,10 +52,7 @@ class LitM5NBeats(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         x_valid_batch, y_valid_batch, scales, weights = batch
         with torch.no_grad():
-            forecast, loss = self.net(x_valid_batch.float(),
-                                      y_valid_batch.float(),
-                                      scales,
-                                      weights)
+            forecast, loss = self.net(x_valid_batch.float(), y_valid_batch.float(), scales, weights)
 
         return {'val_loss': loss, 'y_pred': forecast}
 
@@ -72,8 +65,10 @@ class LitM5NBeats(pl.LightningModule):
         main_score = self.evaluator.score(np.array(y_pred))
         main_score = torch.tensor(main_score).type_as(x['y_pred'])
         tensorboard_logs = {'main_score': main_score, 'val_loss': np.sum(losses), "epoch": self.trainer.current_epoch}
-        return {# 'val_loss': np.sum(losses), 'main_score': main_score,
-                'log': tensorboard_logs, 'progress_bar': tensorboard_logs}
+        return {  # 'val_loss': np.sum(losses), 'main_score': main_score,
+            'log': tensorboard_logs,
+            'progress_bar': tensorboard_logs,
+        }
 
     def configure_optimizers(self):
         optimizer = load_obj(self.cfg.optimizer.class_name)(self.net.parameters(), **self.cfg.optimizer.params)
@@ -87,16 +82,18 @@ class LitM5NBeats(pl.LightningModule):
         self.valid_dataset = datasets['valid']
 
     def train_dataloader(self):
-        train_loader = torch.utils.data.DataLoader(self.train_dataset,
-                                                   batch_size=self.cfg.data.batch_size,
-                                                   num_workers=self.cfg.data.num_workers,
-                                                   shuffle=True)
+        train_loader = torch.utils.data.DataLoader(
+            self.train_dataset,
+            batch_size=self.cfg.data.batch_size,
+            num_workers=self.cfg.data.num_workers,
+            shuffle=True,
+        )
         return train_loader
 
     def val_dataloader(self):
-        valid_loader = torch.utils.data.DataLoader(self.valid_dataset,
-                                                   batch_size=self.cfg.data.batch_size,
-                                                   num_workers=0)
+        valid_loader = torch.utils.data.DataLoader(
+            self.valid_dataset, batch_size=self.cfg.data.batch_size, num_workers=0
+        )
         return valid_loader
 
     # @lru_cache()

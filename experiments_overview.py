@@ -5,8 +5,7 @@ import argparse
 from omegaconf import DictConfig
 
 
-def show_scores(cfg: DictConfig = None,
-                metric: str = 'main_score'):
+def show_scores(cfg: DictConfig = None, metric: str = 'main_score'):
     comet_api = comet_ml.api.API(cfg.private.comet_api)
 
     experiments = comet_api.get(f"{cfg.general.workspace}/{cfg.general.project_name}")
@@ -31,12 +30,8 @@ if __name__ == "__main__":
     parser.add_argument("--metric", help="main config", type=str, default='main_score')
     args = parser.parse_args()
 
-    initialize(
-        config_dir=args.config_dir,
-        strict=True)
+    initialize(config_dir=args.config_dir, strict=True)
 
-    cfg = compose(
-        config_file=args.main_config
-    )
+    cfg = compose(config_file=args.main_config)
 
     show_scores(cfg, args.metric)

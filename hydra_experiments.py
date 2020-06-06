@@ -16,13 +16,9 @@ if __name__ == "__main__":
     parser.add_argument("--main_config", help="main config", type=str, default="config.yaml")
     args = parser.parse_args()
 
-    hydra.experimental.initialize(
-        config_dir=args.config_dir,
-        strict=True)
+    hydra.experimental.initialize(config_dir=args.config_dir, strict=True)
 
-    experiment_cfg = hydra.experimental.compose(
-        config_file="experiments.yaml"
-    )
+    experiment_cfg = hydra.experimental.compose(config_file="experiments.yaml")
 
     experiment_dict = config_to_hydra_dict(experiment_cfg)
 
@@ -30,9 +26,6 @@ if __name__ == "__main__":
 
     for experiment in experiments:
         print(os.getcwd())
-        cfg = hydra.experimental.compose(
-            config_file="config.yaml",
-            overrides=experiment
-        )
+        cfg = hydra.experimental.compose(config_file="config.yaml", overrides=experiment)
         print(cfg.pretty())
         # run(cfg)

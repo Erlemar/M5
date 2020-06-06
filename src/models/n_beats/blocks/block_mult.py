@@ -4,7 +4,7 @@ import torch.nn as nn
 class NBeatsBlock(nn.Module):
     """ Basic Building Block of N-Beats.
 
-    This class constructs the basic building block of a 
+    This class constructs the basic building block of a
     N-beats NN, the architecture looks like the following:
 
                                |-theta_forwards
@@ -22,26 +22,28 @@ class NBeatsBlock(nn.Module):
         -layer_nonlinearity: torch.nn nonlinearity function
             to use (ReLU by default.yaml)
         -layer_w_init: torch.nn.init function to use to
-            initialize weight vars 
+            initialize weight vars
             (xavier uniform by default.yaml)
-        -layer_b_init: torch.nn.init function to use to 
+        -layer_b_init: torch.nn.init function to use to
             initialize bias constants (zeros by default.yaml)
     """
-    def __init__(self,
-                 f_b_dim,
-                 thetas_dim=None,
-                 num_hidden_layers=3,
-                 hidden_layer_dim=1,
-                 layer_nonlinearity=nn.ReLU,
-                 layer_w_init=nn.init.xavier_uniform_,
-                 layer_b_init=nn.init.zeros_):
+
+    def __init__(
+        self,
+        f_b_dim,
+        thetas_dim=None,
+        num_hidden_layers=3,
+        hidden_layer_dim=1,
+        layer_nonlinearity=nn.ReLU,
+        layer_w_init=nn.init.xavier_uniform_,
+        layer_b_init=nn.init.zeros_,
+    ):
         super().__init__()
         self._f_b_dim = f_b_dim
         self._hidden_layer_dim = hidden_layer_dim
         self._num_hidden_layers = num_hidden_layers
         self._theta_heads = 2
-        self._thetas_dim = (thetas_dim if thetas_dim is not
-                           None else [self._hidden_layer_dim] * self._theta_heads)
+        self._thetas_dim = thetas_dim if thetas_dim is not None else [self._hidden_layer_dim] * self._theta_heads
 
         self._layers = nn.ModuleList()
         self._thetas_output_layers = nn.ModuleList()

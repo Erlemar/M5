@@ -4,16 +4,8 @@ from src.models.n_beats.blocks.block import NBeatsBlock
 
 
 class TrendBlock(NBeatsBlock):
-    def __init__(self,
-                 f_b_dim,
-                 thetas_dim=(2, 2),
-                 num_hidden_layers=3,
-                 hidden_layer_dim=8,
-                 **kwargs):
-        super(TrendBlock, self).__init__(f_b_dim,
-                                         thetas_dim,
-                                         num_hidden_layers,
-                                         hidden_layer_dim)
+    def __init__(self, f_b_dim, thetas_dim=(2, 2), num_hidden_layers=3, hidden_layer_dim=8, **kwargs):
+        super(TrendBlock, self).__init__(f_b_dim, thetas_dim, num_hidden_layers, hidden_layer_dim)
         self.backcast_linspace, self.forecast_linspace = self.linspace()
 
     def forward(self, x):

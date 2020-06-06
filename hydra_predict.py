@@ -27,18 +27,15 @@ def make_prediction(cfg: DictConfig):
     set_seed(cfg.training.seed)
     model_name = glob.glob(f'outputs/{cfg.inference.run_name}/saved_models/*')[0]
 
-    lit_model = LitM5NBeats.load_from_checkpoint(
-        checkpoint_path=model_name,
-        cfg=cfg
-    )
+    lit_model = LitM5NBeats.load_from_checkpoint(checkpoint_path=model_name, cfg=cfg)
 
     net = lit_model.net
 
     datasets = get_datasets(cfg)
 
-    loader = torch.utils.data.DataLoader(datasets[cfg.inference.mode],
-                                         batch_size=cfg.data.batch_size,
-                                         num_workers=cfg.data.num_workers, shuffle=False)
+    loader = torch.utils.data.DataLoader(
+        datasets[cfg.inference.mode], batch_size=cfg.data.batch_size, num_workers=cfg.data.num_workers, shuffle=False
+    )
 
     y_pred = []
     device = cfg.data.device
@@ -47,10 +44,7 @@ def make_prediction(cfg: DictConfig):
     net.eval()
 
     for i, (x, y, scales, weights) in enumerate(loader):
-        forecast, loss = net(x.float().to(device),
-                             y.float().to(device),
-                             scales.to(device),
-                             weights.to(device))
+        forecast, loss = net(x.float().to(device), y.float().to(device), scales.to(device), weights.to(device))
         y_pred.extend(forecast.cpu().detach().numpy())
 
     y_pred = np.array(y_pred)
@@ -67,9 +61,7 @@ if __name__ == "__main__":
     parser.add_argument("--mode", help="valid or test", type=str, default='valid')
     args = parser.parse_args()
 
-    hydra.experimental.initialize(
-        config_dir="conf",
-        strict=True)
+    hydra.experimental.initialize(config_dir="conf", strict=True)
     inference_cfg = hydra.experimental.compose(config_file="config.yaml")
     inference_cfg['inference']['run_name'] = args.run_name
     inference_cfg['inference']['mode'] = args.mode

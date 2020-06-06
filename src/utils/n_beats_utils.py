@@ -13,13 +13,14 @@ from typing import Union
 
 
 class MDatasetOld(Dataset):
-
-    def __init__(self,
-                 df: pd.DataFrame = None,
-                 mode: str = 'train',
-                 backcast_length: int = 7,
-                 forecast_length: int = 7,
-                 val_rate: float = 0.8):
+    def __init__(
+        self,
+        df: pd.DataFrame = None,
+        mode: str = 'train',
+        backcast_length: int = 7,
+        forecast_length: int = 7,
+        val_rate: float = 0.8,
+    ):
         """
 
         Args:
@@ -33,7 +34,7 @@ class MDatasetOld(Dataset):
         self.val_rate = val_rate
 
     def __getitem__(self, idx):
-        item_data = self.df[idx, 6:].reshape(-1, )
+        item_data = self.df[idx, 6:].reshape(-1)
         if self.mode == 'train':
             min_ind = self.backcast_length
             max_ind = (len(item_data) - self.forecast_length - self.backcast_length + 1) * self.val_rate
@@ -44,9 +45,9 @@ class MDatasetOld(Dataset):
         # rand_ind = np.random.randint(self.backcast_length, len(item_data) + 1 - self.forecast_length)
         rand_ind = np.random.randint(min_ind, max_ind)
         # print(rand_ind, idx)
-        x = item_data[rand_ind - self.backcast_length: rand_ind].astype(float)
+        x = item_data[rand_ind - self.backcast_length : rand_ind].astype(float)
         # print('x', x.shape)
-        y = item_data[rand_ind:rand_ind + self.forecast_length].astype(float)
+        y = item_data[rand_ind : rand_ind + self.forecast_length].astype(float)
         # print('y', y.shape)
 
         return x, y
@@ -164,8 +165,9 @@ def wrmsse(logits, labels, ws_dict, names, device):
     return torch.sum(r * weights)
 
 
-def train_100_grad_steps(train_dl, device, net, optimiser, test_losses, checkpoint_name='nbeats-training-checkpoint.th',
-                         ws_dict=None):
+def train_100_grad_steps(
+    train_dl, device, net, optimiser, test_losses, checkpoint_name='nbeats-training-checkpoint.th', ws_dict=None
+):
     # criterion = RMSELoss()
     criterion = wrmsse
     total_loss = 0
@@ -201,11 +203,14 @@ def load(model, optimiser, checkpoint_name):
 
 
 def save(model, optimiser, grad_step, checkpoint_name):
-    torch.save({
-        'grad_step': grad_step,
-        'model_state_dict': model.state_dict(),
-        'optimizer_state_dict': optimiser.state_dict(),
-    }, checkpoint_name)
+    torch.save(
+        {
+            'grad_step': grad_step,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimiser.state_dict(),
+        },
+        checkpoint_name,
+    )
 
 
 # evaluate model on test data and produce some plots.
@@ -214,7 +219,9 @@ def eval_test_old(backcast_length, forecast_length, net, norm_constant, test_los
     criterion = RMSELoss()
     _, forecast = net(torch.as_tensor(x_test, dtype=torch.float))
     # test_losses.append(F.mse_loss(forecast, torch.tensor(y_test, dtype=torch.float)).item())
-    test_losses.append(criterion(torch.as_tensor(forecast, dtype=torch.float), torch.as_tensor(y_test, dtype=torch.float)).item())
+    test_losses.append(
+        criterion(torch.as_tensor(forecast, dtype=torch.float), torch.as_tensor(y_test, dtype=torch.float)).item()
+    )
     p = forecast.cpu().detach().numpy()
     subplots = [221, 222, 223, 224]
     plt.figure(1)
@@ -246,7 +253,9 @@ def eval_test(backcast_length, forecast_length, net, norm_constant, test_losses,
     # test_losses.append(F.mse_loss(forecast, torch.tensor(y_test, dtype=torch.float)).item())
     # test_losses.append(criterion(torch.as_tensor(y_pred, dtype=torch.float), torch.as_tensor(y_true, dtype=torch.float)).item())
     # print(len(y_pred), len(y_true), len(names))
-    loss = criterion(torch.as_tensor(y_pred, dtype=torch.float), torch.as_tensor(y_true, dtype=torch.float), ws_dict, names, 'cpu')
+    loss = criterion(
+        torch.as_tensor(y_pred, dtype=torch.float), torch.as_tensor(y_true, dtype=torch.float), ws_dict, names, 'cpu'
+    )
     test_losses.append(loss)
     # test_losses.append(criterion(torch.as_tensor(y_pred, dtype=torch.float), torch.as_tensor(y_true, dtype=torch.float)).item())
     p = forecast.cpu().detach().numpy()
@@ -294,16 +303,22 @@ def get_m4_data(backcast_length, forecast_length, is_training=True):
             time_series_cleaned_forlearning_x = np.zeros((1, backcast_length))
             time_series_cleaned_forlearning_y = np.zeros((1, forecast_length))
             j = np.random.randint(backcast_length, time_series_cleaned.shape[0] + 1 - forecast_length)
-            time_series_cleaned_forlearning_x[0, :] = time_series_cleaned[j - backcast_length: j]
-            time_series_cleaned_forlearning_y[0, :] = time_series_cleaned[j:j + forecast_length]
+            time_series_cleaned_forlearning_x[0, :] = time_series_cleaned[j - backcast_length : j]
+            time_series_cleaned_forlearning_y[0, :] = time_series_cleaned[j : j + forecast_length]
         else:
             time_series_cleaned_forlearning_x = np.zeros(
-                (time_series_cleaned.shape[0] + 1 - (backcast_length + forecast_length), backcast_length))
+                (time_series_cleaned.shape[0] + 1 - (backcast_length + forecast_length), backcast_length)
+            )
             time_series_cleaned_forlearning_y = np.zeros(
-                (time_series_cleaned.shape[0] + 1 - (backcast_length + forecast_length), forecast_length))
+                (time_series_cleaned.shape[0] + 1 - (backcast_length + forecast_length), forecast_length)
+            )
             for j in range(backcast_length, time_series_cleaned.shape[0] + 1 - forecast_length):
-                time_series_cleaned_forlearning_x[j - backcast_length, :] = time_series_cleaned[j - backcast_length:j]
-                time_series_cleaned_forlearning_y[j - backcast_length, :] = time_series_cleaned[j: j + forecast_length]
+                time_series_cleaned_forlearning_x[j - backcast_length, :] = time_series_cleaned[
+                    j - backcast_length : j
+                ]
+                time_series_cleaned_forlearning_y[j - backcast_length, :] = time_series_cleaned[
+                    j : j + forecast_length
+                ]
         x = np.vstack((x, time_series_cleaned_forlearning_x))
         y = np.vstack((y, time_series_cleaned_forlearning_y))
 
@@ -328,12 +343,33 @@ def batcher(dataset, batch_size, infinite=False):
         if not infinite:
             break
 
-def train_model(model, train_dl, optimizer, loss_fn, epochs=1, val_dl = None, verbose=False, scheduler = None, metric_fns = {}, gradient_accumulation_steps=1, fp16=False, callbacks = None, hist = None, batch_unravel_fn = None):
 
+def train_model(
+    model,
+    train_dl,
+    optimizer,
+    loss_fn,
+    epochs=1,
+    val_dl=None,
+    verbose=False,
+    scheduler=None,
+    metric_fns={},
+    gradient_accumulation_steps=1,
+    fp16=False,
+    callbacks=None,
+    hist=None,
+    batch_unravel_fn=None,
+):
 
     if hist is None:
-        hist = {'metrics':{m:[] for m in metric_fns},'tr_loss':[],'val_loss':[],'tr_time':[],'val_time':[],'lr':[]}
-
+        hist = {
+            'metrics': {m: [] for m in metric_fns},
+            'tr_loss': [],
+            'val_loss': [],
+            'tr_time': [],
+            'val_time': [],
+            'lr': [],
+        }
 
     for epoch in range(epochs):
 
@@ -341,7 +377,7 @@ def train_model(model, train_dl, optimizer, loss_fn, epochs=1, val_dl = None, ve
 
         tr_loss = 0
         model.train()
-        for step, batch in tqdm(enumerate(train_dl),total=len(train_dl), disable=1-verbose):
+        for step, batch in tqdm(enumerate(train_dl), total=len(train_dl), disable=1 - verbose):
 
             if batch_unravel_fn is None:
                 batch = tuple(t.cuda() for t in batch)
@@ -377,30 +413,37 @@ def train_model(model, train_dl, optimizer, loss_fn, epochs=1, val_dl = None, ve
         # EVAL
         if val_dl is not None:
             val_start_time = time.time()
-            val_hist = eval(val_dl, model, loss_fn, metric_fns=metric_fns,batch_unravel_fn = batch_unravel_fn)
+            val_hist = eval(val_dl, model, loss_fn, metric_fns=metric_fns, batch_unravel_fn=batch_unravel_fn)
 
-            val_time = time.time()-val_start_time
+            val_time = time.time() - val_start_time
 
             hist['val_loss'] += [val_hist['val_loss']]
             hist['val_time'] += [val_time]
             for m in val_hist['metrics']:
                 hist['metrics'][m] += [val_hist['metrics'][m]]
 
-        #apply callbacks
+        # apply callbacks
         for callback in callbacks:
             callback(epoch, hist, model)
 
 
 class WRMSSEEvaluator(object):
-    group_ids = ('all_id', 'state_id', 'store_id', 'cat_id', 'dept_id', 'item_id',
-                 ['state_id', 'cat_id'], ['state_id', 'dept_id'], ['store_id', 'cat_id'],
-                 ['store_id', 'dept_id'], ['item_id', 'state_id'], ['item_id', 'store_id'])
+    group_ids = (
+        'all_id',
+        'state_id',
+        'store_id',
+        'cat_id',
+        'dept_id',
+        'item_id',
+        ['state_id', 'cat_id'],
+        ['state_id', 'dept_id'],
+        ['store_id', 'cat_id'],
+        ['store_id', 'dept_id'],
+        ['item_id', 'state_id'],
+        ['item_id', 'store_id'],
+    )
 
-    def __init__(self,
-                 train_df: pd.DataFrame,
-                 valid_df: pd.DataFrame,
-                 calendar: pd.DataFrame,
-                 prices: pd.DataFrame):
+    def __init__(self, train_df: pd.DataFrame, valid_df: pd.DataFrame, calendar: pd.DataFrame, prices: pd.DataFrame):
         """
         intialize and calculate weights
         """
@@ -417,15 +460,9 @@ class WRMSSEEvaluator(object):
         self.valid_target_columns = [i for i in self.valid_df.columns if i.startswith('d_')]
 
         if not all([c in self.valid_df.columns for c in self.id_columns]):
-            self.valid_df = pd.concat([self.train_df[self.id_columns], self.valid_df],
-                                      axis=1,
-                                      sort=False)
-        self.train_series = self.trans_30490_to_42840(self.train_df,
-                                                      self.train_target_columns,
-                                                      self.group_ids)
-        self.valid_series = self.trans_30490_to_42840(self.valid_df,
-                                                      self.valid_target_columns,
-                                                      self.group_ids)
+            self.valid_df = pd.concat([self.train_df[self.id_columns], self.valid_df], axis=1, sort=False)
+        self.train_series = self.trans_30490_to_42840(self.train_df, self.train_target_columns, self.group_ids)
+        self.valid_series = self.trans_30490_to_42840(self.valid_df, self.valid_target_columns, self.group_ids)
         self.weights = self.get_weight_df()
         self.scale = self.get_scale()
         # self.train_series = None
@@ -440,7 +477,7 @@ class WRMSSEEvaluator(object):
         scales = []
         for i in tqdm(range(len(self.train_series))):
             series = self.train_series.iloc[i].values
-            series = series[np.argmax(series != 0):]
+            series = series[np.argmax(series != 0) :]
             scale = ((series[1:] - series[:-1]) ** 2).mean()
             scales.append(scale)
         return np.array(scales)
@@ -461,34 +498,20 @@ class WRMSSEEvaluator(object):
         returns weights for each of 42840 series in a dataFrame
         """
         day_to_week = self.calendar.set_index("d")["wm_yr_wk"].to_dict()
-        weight_df = self.train_df[["item_id", "store_id"] + self.weight_columns].set_index(
-            ["item_id", "store_id"]
-        )
-        weight_df = (
-            weight_df.stack().reset_index().rename(columns={"level_2": "d", 0: "value"})
-        )
+        weight_df = self.train_df[["item_id", "store_id"] + self.weight_columns].set_index(["item_id", "store_id"])
+        weight_df = weight_df.stack().reset_index().rename(columns={"level_2": "d", 0: "value"})
         weight_df["wm_yr_wk"] = weight_df["d"].map(day_to_week)
-        weight_df = weight_df.merge(
-            self.prices, how="left", on=["item_id", "store_id", "wm_yr_wk"]
-        )
+        weight_df = weight_df.merge(self.prices, how="left", on=["item_id", "store_id", "wm_yr_wk"])
         weight_df["value"] = weight_df["value"] * weight_df["sell_price"]
-        weight_df = weight_df.set_index(["item_id", "store_id", "d"]).unstack(level=2)[
-            "value"
-        ]
-        weight_df = weight_df.loc[
-                    zip(self.train_df.item_id, self.train_df.store_id), :
-                    ].reset_index(drop=True)
-        weight_df = pd.concat(
-            [self.train_df[self.id_columns], weight_df], axis=1, sort=False
-        )
+        weight_df = weight_df.set_index(["item_id", "store_id", "d"]).unstack(level=2)["value"]
+        weight_df = weight_df.loc[zip(self.train_df.item_id, self.train_df.store_id), :].reset_index(drop=True)
+        weight_df = pd.concat([self.train_df[self.id_columns], weight_df], axis=1, sort=False)
         weights_map = {}
         for j, group_id in enumerate(tqdm(self.group_ids, leave=False)):
             lv_weight = weight_df.groupby(group_id)[self.weight_columns].sum().sum(axis=1)
             lv_weight = lv_weight / lv_weight.sum()
             for i in range(len(lv_weight)):
-                weights_map[self.get_name(lv_weight.index[i])] = np.array(
-                    [lv_weight.iloc[i]]
-                )
+                weights_map[self.get_name(lv_weight.index[i])] = np.array([lv_weight.iloc[i]])
         weights = pd.DataFrame(weights_map).T / len(self.group_ids)
 
         return weights
@@ -518,15 +541,8 @@ class WRMSSEEvaluator(object):
         if isinstance(valid_preds, np.ndarray):
             valid_preds = pd.DataFrame(valid_preds, columns=self.valid_target_columns)
 
-        valid_preds = pd.concat([self.valid_df[self.id_columns], valid_preds],
-                                axis=1,
-                                sort=False)
-        valid_preds = self.trans_30490_to_42840(valid_preds,
-                                                self.valid_target_columns,
-                                                self.group_ids,
-                                                True)
+        valid_preds = pd.concat([self.valid_df[self.id_columns], valid_preds], axis=1, sort=False)
+        valid_preds = self.trans_30490_to_42840(valid_preds, self.valid_target_columns, self.group_ids, True)
         self.rmsse = self.get_rmsse(valid_preds)
-        self.contributors = pd.concat([self.weights, self.rmsse],
-                                      axis=1,
-                                      sort=False).prod(axis=1)
+        self.contributors = pd.concat([self.weights, self.rmsse], axis=1, sort=False).prod(axis=1)
         return np.sum(self.contributors)

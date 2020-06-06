@@ -21,7 +21,7 @@ not possible
 - семплировать много раз из одного ряда за эпоху
 мысль: при создании датасета разбить файл сразу на куски, которые можно брать\
 different thetas
- 
+
 - модель на 28 дней
 - модель рекурсивная
 - предсказывает следующую продажу, через одну и так далее
@@ -52,9 +52,9 @@ Transformer-XL with CBR and WaveNet blocks.
 Hybrid of both Bi-LSTM and Transformer-XL with CBR blocks.
 
 class TimeDistributed(torch.nn.Module):
-    def __init__(self, layer, time_steps, *args):        
+    def __init__(self, layer, time_steps, *args):
         super(TimeDistributed, self).__init__()
-        
+
         self.layers = nn.ModuleList([layer(*args) for i in range(time_steps)])
 
     def forward(self, x):

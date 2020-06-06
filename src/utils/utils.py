@@ -28,9 +28,7 @@ def load_obj(obj_path: str, default_obj_path: str = "") -> Any:
     obj_name = obj_path_list[0]
     module_obj = importlib.import_module(obj_path)
     if not hasattr(module_obj, obj_name):
-        raise AttributeError(
-            f"Object `{obj_name}` cannot be loaded from `{obj_path}`."
-        )
+        raise AttributeError(f"Object `{obj_name}` cannot be loaded from `{obj_path}`.")
     return getattr(module_obj, obj_name)
 
 
@@ -49,11 +47,10 @@ def save_model(model, optimiser, epoch, run_name):
     path = "data/" + run_name + "/saved_models/"
     if not os.path.exists(path):
         os.makedirs(path)
-    torch.save({
-        'epoch': epoch,
-        'model_state_dict': model.state_dict(),
-        'optimizer_state_dict': optimiser.state_dict(),
-    }, path + "model_epoch_" + str(epoch) + ".pt")
+    torch.save(
+        {'epoch': epoch, 'model_state_dict': model.state_dict(), 'optimizer_state_dict': optimiser.state_dict()},
+        path + "model_epoch_" + str(epoch) + ".pt",
+    )
 
 
 def train_epoch(train_dl, device, net, optimizer, ws_dict=None, criterion=None):
@@ -85,8 +82,13 @@ def eval_test(valid_loader, device, net, ws_dict=None, criterion=None, evaluator
     # print('y_pred', np.array(y_pred).shape)
     main_score = evaluator.score(np.array(y_pred))
 
-    loss = criterion(torch.as_tensor(y_pred, dtype=torch.float).to(device),
-                     torch.as_tensor(y_true, dtype=torch.float).to(device), ws_dict, names, device)
+    loss = criterion(
+        torch.as_tensor(y_pred, dtype=torch.float).to(device),
+        torch.as_tensor(y_true, dtype=torch.float).to(device),
+        ws_dict,
+        names,
+        device,
+    )
     return loss, main_score
 
 
@@ -147,8 +149,7 @@ def config_to_hydra_dict(cfg: DictConfig) -> Dict:
 
 
 def save_useful_info():
-    shutil.copytree(os.path.join(hydra.utils.get_original_cwd(), 'src'),
-                    os.path.join(os.getcwd(), 'code/src'))
+    shutil.copytree(os.path.join(hydra.utils.get_original_cwd(), 'src'), os.path.join(os.getcwd(), 'code/src'))
     shutil.copy2(os.path.join(hydra.utils.get_original_cwd(), 'hydra_run.py'), os.path.join(os.getcwd(), 'code'))
 
 

@@ -1,6 +1,7 @@
 import torch
 from torch.nn.modules.loss import _Loss
 
+
 class CustomLossFunctions:
     """
     Custom loss functions for kpforecast.ml models.
@@ -13,7 +14,7 @@ class CustomLossFunctions:
         Args:
             forecasted_out(torch.tensor): 2 dim tensor (2D array where the
                 first dimension corresponds to the number of forecasts, and
-                the second dimension corresponds to length of the forecast) 
+                the second dimension corresponds to length of the forecast)
                 containing a BATCH of forecasts.
             target(torch.tensor): 2 dim tensor with corresponing actuals/targets
                 to the afformentioned forecasts
@@ -29,7 +30,9 @@ class CustomLossFunctions:
         num_eval_samples = 0
         for idx, (targ, forc) in enumerate(zip(target, forecasted_out)):
             num_eval_samples += 1
-            smape += torch.FloatTensor.abs(forc-targ) / ((torch.FloatTensor.abs(targ)+torch.FloatTensor.abs(forc))/2)
+            smape += torch.FloatTensor.abs(forc - targ) / (
+                (torch.FloatTensor.abs(targ) + torch.FloatTensor.abs(forc)) / 2
+            )
         smape = smape / num_eval_samples
         ret = torch.mean(smape) * 100
 
@@ -43,9 +46,7 @@ def wrmsse(logits, labels, scales, weights):
 
 
 class WRMSSE(_Loss):
-    def __init__(self,
-                 use_scale: bool = True,
-                 use_weights: bool = True):
+    def __init__(self, use_scale: bool = True, use_weights: bool = True):
         """
         Calculate wrmsse loss
 
@@ -71,9 +72,7 @@ class WRMSSE(_Loss):
 
 
 class WMASSE(_Loss):
-    def __init__(self,
-                 use_scale: bool = True,
-                 use_weights: bool = True):
+    def __init__(self, use_scale: bool = True, use_weights: bool = True):
         """
         Calculate wrmsse loss
 

@@ -9,6 +9,7 @@ from src.utils.metrics import WRMSSEEvaluator
 from src.utils.utils import set_seed, save_useful_info
 from src.utils.utils import load_obj, flatten_omegaconf
 
+
 def run(cfg: DictConfig):
     """
     Run pytorch-lightning model
@@ -31,25 +32,28 @@ def run(cfg: DictConfig):
     if cfg.logging.log:
 
         tb_logger = TensorBoardLogger(save_dir=cfg.general.save_dir)
-        comet_logger = CometLogger(save_dir=cfg.general.save_dir,
-                                   workspace=cfg.general.workspace,
-                                   project_name=cfg.general.project_name,
-                                   api_key=cfg.private.comet_api,
-                                   experiment_name=os.getcwd().split('\\')[-1])
+        comet_logger = CometLogger(
+            save_dir=cfg.general.save_dir,
+            workspace=cfg.general.workspace,
+            project_name=cfg.general.project_name,
+            api_key=cfg.private.comet_api,
+            experiment_name=os.getcwd().split('\\')[-1],
+        )
         # wandb_logger = WandbLogger(name=os.getcwd().split('\\')[-1],
         #                            save_dir=cfg.general.save_dir,
         #                            project=cfg.general.project_name
         #                            )
-        logger = [tb_logger, comet_logger
-                  ]
+        logger = [tb_logger, comet_logger]
 
-    trainer = pl.Trainer(logger=logger,
-                         early_stop_callback=early_stopping,
-                         checkpoint_callback=model_checkpoint,
-                         callbacks=[lr_logger],
-                         nb_sanity_val_steps=0,
-                         gradient_clip_val=0.5,
-                         **cfg.trainer)
+    trainer = pl.Trainer(
+        logger=logger,
+        early_stop_callback=early_stopping,
+        checkpoint_callback=model_checkpoint,
+        callbacks=[lr_logger],
+        nb_sanity_val_steps=0,
+        gradient_clip_val=0.5,
+        **cfg.trainer,
+    )
     trainer.fit(model)
 
 

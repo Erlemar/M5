@@ -49,32 +49,36 @@ class NBeats(nn.Module):
         - layer_w_init: torch.nn.init function to use to
             initialize weight vars.
             (xavier uniform by default.yaml)
-        - layer_b_init: torch.nn.init function to use to 
-            initialize bias constants. 
+        - layer_b_init: torch.nn.init function to use to
+            initialize bias constants.
             (zeros by default.yaml)
     """
 
-    def __init__(self,
-                 stack: list,
-                 f_b_dim: tuple,
-                 num_blocks_per_stack: list,
-                 share_stack_weights: list,
-                 thetas_dims: list,
-                 shared_g_theta: list,
-                 hidden_layer_dim: list,
-                 num_hidden_layers: list,
-                 layer_nonlinearity: list,
-                 layer_w_init=nn.init.xavier_uniform_,
-                 layer_b_init=nn.init.zeros_,
-                 criterion=None):
+    def __init__(
+        self,
+        stack: list,
+        f_b_dim: tuple,
+        num_blocks_per_stack: list,
+        share_stack_weights: list,
+        thetas_dims: list,
+        shared_g_theta: list,
+        hidden_layer_dim: list,
+        num_hidden_layers: list,
+        layer_nonlinearity: list,
+        layer_w_init=nn.init.xavier_uniform_,
+        layer_b_init=nn.init.zeros_,
+        criterion=None,
+    ):
 
         if not (len(thetas_dims) == len(stack) == len(num_blocks_per_stack)):
-            raise Exception("thetas dims, stacks, and num_blocks_per_stack must \
+            raise Exception(
+                "thetas dims, stacks, and num_blocks_per_stack must \
                             all be lists/tuples of equal length. \
                             thetas_dim = {}, stacks = {}, \
-                            num_blocks_per_stack = {}".format(len(thetas_dims),
-                                                              len(stack),
-                                                              len(num_blocks_per_stack)))
+                            num_blocks_per_stack = {}".format(
+                    len(thetas_dims), len(stack), len(num_blocks_per_stack)
+                )
+            )
         self._stack_classes = stack
         self._f_b_dim = f_b_dim
         self._num_blocks_per_stack = num_blocks_per_stack
@@ -90,17 +94,19 @@ class NBeats(nn.Module):
         self._stacks = nn.ModuleList()
         self.criterion = criterion
         for idx, block_cls in enumerate(self._stack_classes):
-            new_stack = Stack(f_b_dim=self._f_b_dim,
-                              block_cls=block_cls,
-                              num_blocks=self._num_blocks_per_stack[idx],
-                              share_stack_weights=self._share_stack_weights[idx],
-                              thetas_dim=self._thetas_dims[idx],
-                              shared_g_theta=self._shared_g_theta[idx],
-                              hidden_layer_dim=self._hidden_layer_dim[idx],
-                              num_hidden_layers=self._num_hidden_layers[idx],
-                              layer_nonlinearity=self._layer_nonlinearity[idx],
-                              layer_w_init=self._layer_w_init,
-                              layer_b_init=self._layer_b_init)
+            new_stack = Stack(
+                f_b_dim=self._f_b_dim,
+                block_cls=block_cls,
+                num_blocks=self._num_blocks_per_stack[idx],
+                share_stack_weights=self._share_stack_weights[idx],
+                thetas_dim=self._thetas_dims[idx],
+                shared_g_theta=self._shared_g_theta[idx],
+                hidden_layer_dim=self._hidden_layer_dim[idx],
+                num_hidden_layers=self._num_hidden_layers[idx],
+                layer_nonlinearity=self._layer_nonlinearity[idx],
+                layer_w_init=self._layer_w_init,
+                layer_b_init=self._layer_b_init,
+            )
             self._stacks.append(new_stack)
 
     def forward(self, input_var, y, scale, weight):

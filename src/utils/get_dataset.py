@@ -26,16 +26,11 @@ def get_datasets(cfg: DictConfig):
     dataset_class = load_obj(cfg.dataset.class_name)
     # get only useful columns
     train_data = pd.concat([train_fold_df.iloc[:, 0], train_fold_df.iloc[:, 6:-1]], axis=1)
-    train_dataset = dataset_class(train_data,
-                                  'train',
-                                  cfg)
+    train_dataset = dataset_class(train_data, 'train', cfg)
 
-    valid_data = pd.concat([train_fold_df.iloc[:, 0],
-                            train_fold_df.iloc[:, -backcast_length - 1: -1],
-                            valid_fold_df],
-                           axis=1)
-    valid_dataset = dataset_class(valid_data,
-                                  'valid',
-                                  cfg)
+    valid_data = pd.concat(
+        [train_fold_df.iloc[:, 0], train_fold_df.iloc[:, -backcast_length - 1 : -1], valid_fold_df], axis=1
+    )
+    valid_dataset = dataset_class(valid_data, 'valid', cfg)
 
     return {'train': train_dataset, 'valid': valid_dataset}

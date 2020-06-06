@@ -6,20 +6,19 @@ from src.models.n_beats.blocks.block import NBeatsBlock
 
 
 class SeasonalityBlock(NBeatsBlock):
-
-    def __init__(self,
-                 f_b_dim,
-                 thetas_dim=(8, 8),
-                 num_hidden_layers=2,
-                 hidden_layer_dim=1,
-                 layer_nonlinearity=nn.ReLU,
-                 layer_w_init=nn.init.xavier_uniform_,
-                 layer_b_init=nn.init.zeros_,
-                 shared_g_theta=None,
-                 **kwargs):
-        super(SeasonalityBlock, self).__init__(f_b_dim,
-                                               thetas_dim=thetas_dim,
-                                               hidden_layer_dim=hidden_layer_dim)
+    def __init__(
+        self,
+        f_b_dim,
+        thetas_dim=(8, 8),
+        num_hidden_layers=2,
+        hidden_layer_dim=1,
+        layer_nonlinearity=nn.ReLU,
+        layer_w_init=nn.init.xavier_uniform_,
+        layer_b_init=nn.init.zeros_,
+        shared_g_theta=None,
+        **kwargs,
+    ):
+        super(SeasonalityBlock, self).__init__(f_b_dim, thetas_dim=thetas_dim, hidden_layer_dim=hidden_layer_dim)
         self.backcast_linspace, self.forecast_linspace = self.linspace()
 
     def forward(self, x):

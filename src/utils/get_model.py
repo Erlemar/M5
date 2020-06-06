@@ -29,8 +29,6 @@ def get_m5model(cfg: DictConfig):
 
     criterion = load_obj(cfg.loss.class_name)(**cfg.loss.params)
     net = load_obj(cfg.model.class_name)
-    net = net(f_b_dim=f_b_dim,
-              criterion=criterion,
-              **model_dict)
+    net = net(f_b_dim=f_b_dim, criterion=criterion, **model_dict)
 
     return net
