@@ -1,10 +1,11 @@
-import pandas as pd
+from typing import Dict, Any
+
 from omegaconf import DictConfig
-import torch
+
 from src.utils.utils import load_obj
 
 
-def get_m5model(cfg: DictConfig):
+def get_m5model(cfg: DictConfig) -> Any:
     """
     Get model
 
@@ -12,26 +13,23 @@ def get_m5model(cfg: DictConfig):
         cfg: config
 
     Returns:
-
+        initialized model
     """
     backcast_length = cfg.dataset.backcast_length
     forecast_length = cfg.dataset.forecast_length
 
     f_b_dim = (forecast_length, backcast_length)
 
-    stacks = []
-    num_blocks_per_stack = []
-    thetas_dims = []
+    # collect stack parameters.
+    model_dict: Dict[str, list] = {k: [] for k in cfg.model.blocks[0].keys()}
     for block in cfg.model.blocks:
-        stacks.append(load_obj(block['stack']))
-        num_blocks_per_stack.append(block['num_blocks_per_stack'])
-        thetas_dims.append(block['thetas_dims'])
+        for k, v in block.items():
+            if type(v) == str:
+                v = load_obj(v)
+            model_dict[k].append(v)
 
+    criterion = load_obj(cfg.loss.class_name)(**cfg.loss.params)
     net = load_obj(cfg.model.class_name)
-    net = net(stacks=stacks,
-              f_b_dim=f_b_dim,
-              num_blocks_per_stack=num_blocks_per_stack,
-              thetas_dims=thetas_dims,
-              hidden_layer_dim=cfg.model.hidden_layer_dim)
+    net = net(f_b_dim=f_b_dim, criterion=criterion, **model_dict)
 
     return net

@@ -1,6 +1,5 @@
 model:
   class_name: src.models.n_beats.n_beats.NBeats
-  hidden_layer_dim: 256
   blocks:
 #    - stack: src.models.n_beats.blocks.trend_block.TrendBlock
 #      num_blocks_per_stack: 3
@@ -16,21 +15,36 @@ model:
 
     - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
       num_blocks_per_stack: 16
+      share_stack_weights: False
       thetas_dims:
         - 4
         - 4
+      shared_g_theta: False
+      hidden_layer_dim: 256
+      num_hidden_layers: 2
+      layer_nonlinearity: torch.nn.ReLU
 
     - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
       num_blocks_per_stack: 16
+      share_stack_weights: False
       thetas_dims:
         - 2
         - 8
+      shared_g_theta: False
+      hidden_layer_dim: 256
+      num_hidden_layers: 2
+      layer_nonlinearity: torch.nn.ReLU
 
     - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
       num_blocks_per_stack: 16
+      share_stack_weights: False
       thetas_dims:
         - 2
         - 8
+      shared_g_theta: False
+      hidden_layer_dim: 256
+      num_hidden_layers: 2
+      layer_nonlinearity: torch.nn.ReLU
 #
 #    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
 #      num_blocks_per_stack: 16

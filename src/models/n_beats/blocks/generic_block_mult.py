@@ -69,6 +69,15 @@ class GenericNBeatsBlock(NBeatsBlock):
                 out_layer.add_module('non_linearity', layer_nonlinearity())
             self._g_theta_out_layer.append(out_layer)
 
+        out_layer = nn.Sequential()
+        linear_layer = nn.Linear(thetas_dim[0], f_b_dim[0] // 2)
+        layer_w_init(linear_layer.weight)
+        layer_b_init(linear_layer.bias)
+        out_layer.add_module('g_theta_1' + str(0), linear_layer)
+        if layer_nonlinearity:
+            out_layer.add_module('non_linearity', layer_nonlinearity())
+        self._g_theta_out_layer.append(out_layer)
+
     def forward(self, input_val):
         """ Feed Forward function for GenericNBeatsBlock
             module.
@@ -81,13 +90,12 @@ class GenericNBeatsBlock(NBeatsBlock):
             a different output head
         """
         thetas = super(GenericNBeatsBlock, self).forward(input_val)
+        # print('thetas', len(thetas))
         if self._shared_g_theta:
             return [self._g_theta_out_layer[0](theta) for theta in thetas]
         else:
-            if len(thetas) != len(self._g_theta_out_layer):
-                raise Exception(
-                    "number of theta output heads must be \
-                                  must be the same as num of g's (\
-                                  function generators)"
-                )
-            return [layer(theta) for (layer, theta) in zip(self._g_theta_out_layer, thetas)]
+            return [
+                self._g_theta_out_layer[0](thetas[0]),
+                self._g_theta_out_layer[1](thetas[1]),
+                self._g_theta_out_layer[2](thetas[0]),
+            ]

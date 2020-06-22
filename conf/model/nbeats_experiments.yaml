@@ -1,41 +1,222 @@
 model:
   class_name: src.models.n_beats.n_beats.NBeats
-  hidden_layer_dim: 512
   blocks:
-#    block1:
-#      stack: src.models.n_beats.blocks.trend_block.TrendBlock
-#      num_blocks_per_stack: 4
-#      thetas_dims:
-#        - 1
-#        - 1
+    - stack: src.models.n_beats.blocks.trend_block.TrendBlock
+      num_blocks_per_stack: 3
+      share_stack_weights: True
+      thetas_dims:
+        - 2
+        - 2
+      shared_g_theta: False
+      hidden_layer_dim: 256
+      num_hidden_layers: 4
+      layer_nonlinearity: torch.nn.ReLU
+
+    - stack: src.models.n_beats.blocks.seasonality_block.SeasonalityBlock
+      num_blocks_per_stack: 3
+      share_stack_weights: True
+      thetas_dims:
+        - 2
+        - 2
+      shared_g_theta: False
+      hidden_layer_dim: 2048
+      num_hidden_layers: 4
+      layer_nonlinearity: torch.nn.ReLU
+
+    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+      num_blocks_per_stack: 2
+      share_stack_weights: False
+      thetas_dims:
+        - 4
+        - 4
+      shared_g_theta: False
+      hidden_layer_dim: 512
+      num_hidden_layers: 4
+      layer_nonlinearity: torch.nn.ReLU
 #
-#    block2:
-#      stack: src.models.n_beats.blocks.seasonality_block.SeasonalityBlock
-#      num_blocks_per_stack: 4
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
 #      thetas_dims:
-#        - 1
-#        - 1
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      share_stack_weights: False
+#      thetas_dims:
+#        - 2
+#        - 8
+#      shared_g_theta: False
+#      hidden_layer_dim: 512
+#      num_hidden_layers: 4
+#      layer_nonlinearity: torch.nn.ReLU
 
-    block3:
-      stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
-      num_blocks_per_stack: 16
-      thetas_dims:
-        - 4
-        - 4
 
-    block4:
-      stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
-      num_blocks_per_stack: 16
-      thetas_dims:
-        - 2
-        - 8
-
-    block5:
-      stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
-      num_blocks_per_stack: 16
-      thetas_dims:
-        - 2
-        - 8
+#
+#    - stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock
+#      num_blocks_per_stack: 16
+#      thetas_dims:
+#        - 2
+#        - 8
 
 #    block6:
 #      stack: src.models.n_beats.blocks.generic_block.GenericNBeatsBlock

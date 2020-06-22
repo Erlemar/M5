@@ -2,7 +2,7 @@ import importlib
 import os
 import random
 from itertools import product
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Generator
 
 import numpy as np
 import torch
@@ -10,26 +10,26 @@ from omegaconf import DictConfig, OmegaConf
 import shutil
 import hydra
 import collections
+from torch import nn
 
 
-def load_obj(obj_path: str, default_obj_path: str = "") -> Any:
-    """Extract an object from a given path.
-        Args:
-            obj_path: Path to an object to be extracted, including the object name.
-            default_obj_path: Default object path.
-        Returns:
-            Extracted object.
-        Raises:
-            AttributeError: When the object does not have the given named attribute.
+def load_obj(obj_path: str, default_obj_path: str = '') -> Any:
     """
-    obj_path_list = obj_path.rsplit(".", 1)
+    Extract an object from a given path.
+    Args:
+        obj_path: Path to an object to be extracted, including the object name.
+        default_obj_path: Default object path.
+    Returns:
+        Extracted object.
+    Raises:
+        AttributeError: When the object does not have the given named attribute.
+    """
+    obj_path_list = obj_path.rsplit('.', 1)
     obj_path = obj_path_list.pop(0) if len(obj_path_list) > 1 else default_obj_path
     obj_name = obj_path_list[0]
     module_obj = importlib.import_module(obj_path)
     if not hasattr(module_obj, obj_name):
-        raise AttributeError(
-            f"Object `{obj_name}` cannot be loaded from `{obj_path}`."
-        )
+        raise AttributeError(f'Object `{obj_name}` cannot be loaded from `{obj_path}`.')
     return getattr(module_obj, obj_name)
 
 
@@ -45,25 +45,21 @@ def load_model(model, optimiser, checkpoint_name):
 
 
 def save_model(model, optimiser, epoch, run_name):
-    path = "data/" + run_name + "/saved_models/"
+    path = 'data/' + run_name + '/saved_models/'
     if not os.path.exists(path):
         os.makedirs(path)
-    torch.save({
-        'epoch': epoch,
-        'model_state_dict': model.state_dict(),
-        'optimizer_state_dict': optimiser.state_dict(),
-    }, path + "model_epoch_" + str(epoch) + ".pt")
+    torch.save(
+        {'epoch': epoch, 'model_state_dict': model.state_dict(), 'optimizer_state_dict': optimiser.state_dict()},
+        path + 'model_epoch_' + str(epoch) + '.pt',
+    )
 
 
 def train_epoch(train_dl, device, net, optimizer, ws_dict=None, criterion=None):
     total_loss = 0
-    for step, (x_train_batch, y_train_batch, item_names) in enumerate(train_dl):
+    for _, (x_train_batch, y_train_batch, item_names) in enumerate(train_dl):
         optimizer.zero_grad()
         net.train()
-        # _, forecast = net(x_train_batch.float().to(device))
         forecast, _ = net(x_train_batch.float().to(device))
-        # print('forecast', forecast.shape)
-        # print('y_train_batch', y_train_batch.shape)
         loss = criterion(forecast.float(), y_train_batch.float().to(device), ws_dict, item_names, device)
         loss.backward()
         optimizer.step()
@@ -76,20 +72,24 @@ def eval_test(valid_loader, device, net, ws_dict=None, criterion=None, evaluator
     y_true = []
     y_pred = []
     names = []
-    for step, (x_valid_batch, y_valid_batch, item_names) in enumerate(valid_loader):
+    for _, (x_valid_batch, y_valid_batch, item_names) in enumerate(valid_loader):
         forecast, _ = net(x_valid_batch.float().to(device))
         y_true.extend(y_valid_batch.cpu().detach().numpy())
         y_pred.extend(forecast.cpu().detach().numpy())
         names.extend(item_names)
-    # print('y_pred', np.array(y_pred).shape)
     main_score = evaluator.score(np.array(y_pred))
 
-    loss = criterion(torch.as_tensor(y_pred, dtype=torch.float).to(device),
-                     torch.as_tensor(y_true, dtype=torch.float).to(device), ws_dict, names, device)
+    loss = criterion(
+        torch.as_tensor(y_pred, dtype=torch.float).to(device),
+        torch.as_tensor(y_true, dtype=torch.float).to(device),
+        ws_dict,
+        names,
+        device,
+    )
     return loss, main_score
 
 
-def set_seed(seed: int = 666, precision: int = 10):
+def set_seed(seed: int = 666, precision: int = 10) -> None:
     np.random.seed(seed)
     random.seed(seed)
     torch.backends.cudnn.benchmark = False
@@ -99,7 +99,7 @@ def set_seed(seed: int = 666, precision: int = 10):
     torch.set_printoptions(precision=precision)
 
 
-def product_dict(**kwargs) -> List[List]:
+def product_dict(**kwargs: Dict) -> Generator:
     """
     Convert dict with lists in values into lists of all combinations
 
@@ -135,6 +135,7 @@ def config_to_hydra_dict(cfg: DictConfig) -> Dict:
         cfg:
 
     Returns:
+        dict
 
     """
     experiment_dict = {}
@@ -146,18 +147,17 @@ def config_to_hydra_dict(cfg: DictConfig) -> Dict:
 
 
 def save_useful_info():
-    shutil.copytree(os.path.join(hydra.utils.get_original_cwd(), 'src'),
-                    os.path.join(os.getcwd(), 'code/src'))
+    shutil.copytree(os.path.join(hydra.utils.get_original_cwd(), 'src'), os.path.join(os.getcwd(), 'code/src'))
     shutil.copy2(os.path.join(hydra.utils.get_original_cwd(), 'hydra_run.py'), os.path.join(os.getcwd(), 'code'))
 
 
-def flatten_omegaconf(d, sep="_"):
+def flatten_omegaconf(d, sep='_'):
 
     d = OmegaConf.to_container(d)
 
     obj = collections.OrderedDict()
 
-    def recurse(t, parent_key=""):
+    def recurse(t, parent_key=''):
 
         if isinstance(t, list):
             for i in range(len(t)):

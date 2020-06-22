@@ -1,8 +1,10 @@
+from src.models.n_beats.blocks.block import NBeatsBlock
+
 import numpy as np
 import torch
 import torch.nn as nn
-
-from src.models.n_beats.blocks.block import NBeatsBlock
+from torch.nn import functional as F
+import matplotlib.pyplot as plt
 
 
 class SeasonalityBlock(NBeatsBlock):
@@ -16,10 +18,10 @@ class SeasonalityBlock(NBeatsBlock):
         layer_w_init=nn.init.xavier_uniform_,
         layer_b_init=nn.init.zeros_,
         shared_g_theta=None,
-        **kwargs,
     ):
+
         super(SeasonalityBlock, self).__init__(f_b_dim, thetas_dim=thetas_dim, hidden_layer_dim=hidden_layer_dim)
-        self.backcast_linspace, self.forecast_linspace = self.linspace()
+        self.backcast_linspace, self.forecast_linspace, self.f_ls1 = self.linspace()
 
     def forward(self, x):
         def seasonality_model(self, thetas, t, x):
@@ -34,12 +36,16 @@ class SeasonalityBlock(NBeatsBlock):
         thetas = super(SeasonalityBlock, self).forward(x)
         backcast = seasonality_model(self, thetas[1], self.backcast_linspace, x)
         forecast = seasonality_model(self, thetas[0], self.forecast_linspace, x)
-        return forecast, backcast
+        forecast1 = seasonality_model(self, thetas[0], self.f_ls1, x)
+        return forecast, backcast, forecast1
 
     def linspace(self):
         backcast_length = self._f_b_dim[1]
         forecast_length = self._f_b_dim[0]
-        lin_space = torch.linspace(-backcast_length, forecast_length, backcast_length + forecast_length)
+        lin_space = torch.linspace(
+            -backcast_length, forecast_length * 1.5, backcast_length + round(forecast_length * 1.5)
+        )
         b_ls = lin_space[:backcast_length]
-        f_ls = lin_space[backcast_length:]
-        return b_ls, f_ls
+        f_ls = lin_space[backcast_length : backcast_length + forecast_length]
+        f_ls1 = lin_space[backcast_length + forecast_length :]
+        return b_ls, f_ls, f_ls1

@@ -2,14 +2,15 @@ defaults:
   - dataset: m5nbeats
   - trainer: default_trainer
   - training: default_training
-  - logging: tensorboard
+  - logging: logging
   - optimizer: adamw
   - scheduler: plateau
-  - model: nbeats_main
+  - model: nbeats_experiments
   - callbacks: callbacks
   - private: custom
   - data: data
   - loss: wrmsse
+  - inference: basic
 
 general:
   save_dir: logs/
