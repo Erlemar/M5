@@ -53,12 +53,13 @@ def make_prediction(cfg: DictConfig) -> None:
     sub = pd.read_csv(f'{cfg.data.folder_path}/data/sample_submission.csv')
 
     sub.iloc[:30490, 1:] = y_pred
+    sub.iloc[30490:, 1:] = y_pred
     sub.to_csv(f'subs/{cfg.inference.run_name}_{cfg.inference.mode}.csv', index=False)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Inference in M5 competition')
-    parser.add_argument('--run_name', help='folder_name', type=str, default='2020_05_16_15_43_39')
+    parser.add_argument('--run_name', help='folder_name', type=str, default='2020_06_21_18_46_39')
     parser.add_argument('--mode', help='valid or test', type=str, default='valid')
     args = parser.parse_args()
 

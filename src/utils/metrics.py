@@ -1,6 +1,6 @@
 # Libraries
 import math
-from typing import Union, Any
+from typing import Union, Any, Iterable
 
 import numpy as np
 import pandas as pd
@@ -130,7 +130,7 @@ class WRMSSEEvaluator(object):
         return np.array(scales)
 
     @staticmethod
-    def get_name(i: Any[str, int]) -> str:
+    def get_name(i: Iterable[str]) -> str:
         """
         Convert a str or list of strings to unique string
         used for naming each of 42840 series

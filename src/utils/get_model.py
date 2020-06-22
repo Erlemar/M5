@@ -1,12 +1,11 @@
-from typing import Dict
+from typing import Dict, Any
 
-import pandas as pd
 from omegaconf import DictConfig
-import torch
+
 from src.utils.utils import load_obj
 
 
-def get_m5model(cfg: DictConfig) -> object:
+def get_m5model(cfg: DictConfig) -> Any:
     """
     Get model
 

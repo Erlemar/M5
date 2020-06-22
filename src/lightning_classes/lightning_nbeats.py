@@ -62,7 +62,8 @@ class LitM5NBeats(pl.LightningModule):
         losses = []
         for _, x in enumerate(outputs):
             y_pred.extend(x['y_pred'].cpu().detach().numpy())
-            losses.extend(x['val_loss'].cpu().detach().numpy())
+            losses.append(x['val_loss'].cpu().detach().numpy())
+        print(np.array(y_pred).shape)
         main_score = self.evaluator.score(np.array(y_pred))
         main_score = torch.tensor(main_score).type_as(x['y_pred'])
         tensorboard_logs = {'main_score': main_score, 'val_loss': np.sum(losses), 'epoch': self.trainer.current_epoch}
@@ -75,7 +76,10 @@ class LitM5NBeats(pl.LightningModule):
         optimizer = load_obj(self.cfg.optimizer.class_name)(self.net.parameters(), **self.cfg.optimizer.params)
         scheduler = load_obj(self.cfg.scheduler.class_name)(optimizer, **self.cfg.scheduler.params)
 
-        return [optimizer], [{'scheduler': scheduler, 'interval': self.cfg.scheduler.step}]
+        return (
+            [optimizer],
+            [{'scheduler': scheduler, 'interval': self.cfg.scheduler.step, 'monitor': self.cfg.scheduler.monitor}],
+        )
 
     def prepare_data(self):
         datasets = get_datasets(self.cfg)

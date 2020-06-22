@@ -48,7 +48,6 @@ def run(cfg: DictConfig) -> None:
         early_stop_callback=early_stopping,
         checkpoint_callback=model_checkpoint,
         callbacks=[lr_logger],
-        nb_sanity_val_steps=0,
         gradient_clip_val=0.5,
         **cfg.trainer,
     )

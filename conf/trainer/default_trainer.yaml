@@ -6,3 +6,4 @@ trainer:
   max_epochs: 200
   fast_dev_run: False
   weights_summary: top
+  num_sanity_val_steps: 0
